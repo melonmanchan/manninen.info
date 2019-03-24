@@ -1,6 +1,16 @@
 import fetch from "node-fetch";
 import cheerio from "cheerio";
+import kafka from "kafka-node";
 const ILTALEHTI_URL = "https://www.is.fi/haku/?query=Tuomas%20Manninen";
+
+const client = new kafka.KafkaClient();
+const producer = new kafka.Producer(client);
+
+producer.on("ready", main);
+producer.on("error", (err: any) => {
+  console.error(err);
+  process.exit(-1);
+});
 
 async function main() {
   const page = await fetch(ILTALEHTI_URL);
@@ -26,9 +36,12 @@ async function main() {
     };
   });
 
-  posts.forEach(async post => {
-    console.log(post);
+  const payloads = posts.map(p => ({
+    topic: "manninen",
+    messages: JSON.stringify(p)
+  }));
+
+  producer.send(payloads, function(err, data) {
+    console.log(data);
   });
 }
-
-main();
