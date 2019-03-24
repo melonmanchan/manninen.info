@@ -1,16 +1,30 @@
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 import kafka from "kafka-node";
+import redis from "redis";
+
 const ILTALEHTI_URL = "https://www.is.fi/haku/?query=Tuomas%20Manninen";
 
-const client = new kafka.KafkaClient();
-const producer = new kafka.Producer(client);
+const redisClient = redis.createClient();
+const kafkaClient = new kafka.KafkaClient();
+const producer = new kafka.Producer(kafkaClient);
 
-producer.on("ready", main);
+producer.on("ready", () => setInterval(main, 10000));
+
 producer.on("error", (err: any) => {
   console.error(err);
   process.exit(-1);
 });
+
+const existsAsync = (key: string) =>
+  redisClient.exists(key, (err, exists) =>
+    err ? Promise.reject(err) : Promise.resolve(exists)
+  );
+
+const setAsync = (key: string, value: any) =>
+  redisClient.set(key, value, (err, exists) =>
+    err ? Promise.reject(err) : Promise.resolve(exists)
+  );
 
 async function main() {
   const page = await fetch(ILTALEHTI_URL);
@@ -36,12 +50,31 @@ async function main() {
     };
   });
 
-  const payloads = posts.map(p => ({
+  const published = await Promise.all(
+    posts.map(async p => {
+      const exists = await existsAsync(p.link);
+      return exists ? null : p;
+    })
+  );
+
+  const nonPublishedPosts = published.filter(Boolean);
+
+  if (!nonPublishedPosts.length) {
+    console.log("no more left to publish");
+    return;
+  }
+
+  const payloads = nonPublishedPosts.map(p => ({
     topic: "manninen",
     messages: JSON.stringify(p)
   }));
 
   producer.send(payloads, function(err, data) {
-    console.log(data);
+    console.log(`published ${nonPublishedPosts.length} articles`);
+    nonPublishedPosts.forEach(async post => {
+      if (post) {
+        await setAsync(post.link, 1);
+      }
+    });
   });
 }
