@@ -74,7 +74,8 @@ async function main() {
   }));
 
   producer.send(payloads, function(err, data) {
-    console.log(`published ${nonPublishedPosts.length} articles`);
+    console.log(err);
+    console.log(data);
     nonPublishedPosts.forEach(async post => {
       if (post) {
         await setAsync(post.link, 1);

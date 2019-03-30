@@ -1,0 +1,20 @@
+{
+  "name": "manninen-article-source",
+  "scripts": {
+    "start:dev": "ts-node src/index.ts",
+    "start": "node build/server.js"
+  },
+  "version": "0.0.1",
+  "description": "Microservice for publishing tuomas manninen-related articles",
+  "main": "index.js",
+  "author": "Matti Jokitulppo <matti.jokitulppo@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/kafka-node": "^2.0.8",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.4000"
+  },
+  "dependencies": {
+    "kafka-node": "^4.0.2"
+  }
+}
