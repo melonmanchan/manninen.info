@@ -11,13 +11,13 @@
   "license": "MIT",
   "devDependencies": {
     "@types/cheerio": "^0.22.11",
+    "@types/kafka-node": "^2.0.8",
     "@types/node-fetch": "^2.1.7",
     "@types/redis": "^2.8.11",
     "ts-node": "^8.0.3",
     "typescript": "^3.3.4000"
   },
   "dependencies": {
-    "@types/kafka-node": "^2.0.8",
     "cheerio": "^1.0.0-rc.2",
     "kafka-node": "^4.0.2",
     "node-fetch": "^2.3.0",

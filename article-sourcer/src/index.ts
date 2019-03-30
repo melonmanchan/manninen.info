@@ -9,7 +9,7 @@ const redisClient = redis.createClient();
 const kafkaClient = new kafka.KafkaClient();
 const producer = new kafka.Producer(kafkaClient);
 
-producer.on("ready", () => setInterval(main, 10000));
+producer.on("ready", () => setInterval(main, 5000));
 
 producer.on("error", (err: any) => {
   console.error(err);
@@ -17,14 +17,18 @@ producer.on("error", (err: any) => {
 });
 
 const existsAsync = (key: string) =>
-  redisClient.exists(key, (err, exists) =>
-    err ? Promise.reject(err) : Promise.resolve(exists)
-  );
+  new Promise((resolve, reject) => {
+    redisClient.exists(key, (err, exists) =>
+      err ? reject(err) : resolve(!!exists)
+    );
+  });
 
 const setAsync = (key: string, value: any) =>
-  redisClient.set(key, value, (err, exists) =>
-    err ? Promise.reject(err) : Promise.resolve(exists)
-  );
+  new Promise((resolve, reject) => {
+    redisClient.set(key, value, (err, response) =>
+      err ? reject(err) : resolve(response)
+    );
+  });
 
 async function main() {
   const page = await fetch(ILTALEHTI_URL);
