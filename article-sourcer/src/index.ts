@@ -1,9 +1,9 @@
-import { DateTime } from "luxon";
-
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 import kafka from "kafka-node";
 import redis from "redis";
+
+import { extractDate } from "./utils";
 
 const ILTALEHTI_URL = "https://www.is.fi/haku/?query=Tuomas%20Manninen";
 
@@ -31,16 +31,6 @@ const setAsync = (key: string, value: any) =>
       err ? reject(err) : resolve(response)
     );
   });
-
-const extractDate = (date: string): Date => {
-  const extracted = DateTime.fromFormat(date, "d.M. mm:ss");
-
-  const extractedDate = extracted.toJSDate();
-
-  extractedDate.setFullYear(2019);
-
-  return extractedDate;
-};
 
 async function main() {
   const page = await fetch(ILTALEHTI_URL);
