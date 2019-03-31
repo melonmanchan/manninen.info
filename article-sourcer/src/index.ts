@@ -61,7 +61,7 @@ async function main() {
     return {
       link: l,
       text: titles[i],
-      date: extractDate(dates[i])
+      date: extractDate(dates[i]).getOrElse(new Date())
     };
   });
 
