@@ -1,0 +1,7 @@
+- Figure out how to setup circleCi for a monorepo on github
+- Use BSON to send stuff to kafka
+- Implement frontend
+- Implement slackbot
+- Implement twitter
+- Add kubernetes/docker
+- Add db to RSS
