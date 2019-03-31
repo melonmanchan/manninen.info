@@ -1,11 +1,7 @@
+import { Article } from "./types";
 import kafka from "kafka-node";
 
 const kafkaClient = new kafka.KafkaClient();
-
-type Article = {
-  link: string;
-  text: string;
-};
 
 const articles: Array<Article> = [];
 
@@ -22,7 +18,7 @@ consumer.on("message", msg => {
   console.log(msg);
   try {
     const article = JSON.parse(messageAsJson(msg.value)) as Article;
-    articles.push(article);
+    articles.push({ ...article, ...{ date: new Date() } });
   } catch (ex) {
     console.error(ex);
   }
@@ -33,4 +29,4 @@ consumer.on("error", (err: any) => {
   process.exit(-1);
 });
 
-export { consumer, articles };
+export { articles };
