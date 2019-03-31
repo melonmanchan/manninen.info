@@ -1,6 +1,6 @@
 import RSS from "rss";
 
-import { Article } from "./types";
+import { Article } from "../../shared/types";
 
 export const articlesToFeed = (articles: Array<Article>): string => {
   var feed = new RSS({

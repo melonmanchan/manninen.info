@@ -1,4 +1,5 @@
-import { Article } from "./types";
+import { Article } from "../../shared/types";
+
 import kafka from "kafka-node";
 
 const kafkaClient = new kafka.KafkaClient();

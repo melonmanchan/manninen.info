@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import fetch from "node-fetch";
 import cheerio from "cheerio";
 import kafka from "kafka-node";
@@ -30,6 +32,16 @@ const setAsync = (key: string, value: any) =>
     );
   });
 
+const extractDate = (date: string): Date => {
+  const extracted = DateTime.fromFormat(date, "d.M. mm:ss");
+
+  const extractedDate = extracted.toJSDate();
+
+  extractedDate.setFullYear(2019);
+
+  return extractedDate;
+};
+
 async function main() {
   const page = await fetch(ILTALEHTI_URL);
   const text = await page.text();
@@ -47,10 +59,19 @@ async function main() {
     })
     .get();
 
+  const dates = $(".search-result time")
+    .map(function(_index, element) {
+      return $(element)
+        .text()
+        .trim();
+    })
+    .get();
+
   const posts = links.map((l, i) => {
     return {
       link: l,
-      text: titles[i]
+      text: titles[i],
+      date: extractDate(dates[i])
     };
   });
 
@@ -67,6 +88,8 @@ async function main() {
     console.log("no more left to publish");
     return;
   }
+
+  console.log(nonPublishedPosts);
 
   const payloads = nonPublishedPosts.map(p => ({
     topic: "manninen",
