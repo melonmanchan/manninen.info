@@ -4,7 +4,7 @@
     "start:dev": "ts-node src/index.ts",
     "build": "tsc",
     "start": "node build/server.js",
-    "test": "jest"
+    "test": "TZ='Europe/Helsinki' jest"
   },
   "version": "0.0.1",
   "description": "Microservice for publishing tuomas manninen-related articles",
