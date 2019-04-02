@@ -4,5 +4,6 @@ matrix:
       node_js: "10.15.2"
       before_script:
         - cd article-sourcer
+        - yarn
       script:
         - yarn test
